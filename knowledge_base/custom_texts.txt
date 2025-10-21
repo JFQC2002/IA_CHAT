@@ -1,0 +1,73 @@
+Service Oriented Architecture con Django
+
+Service Layers Pattern organiza los servicios en capas lógicas según su propósito funcional. Las principales capas son: capa agnóstica que contiene lógica de negocio reutilizable independiente del framework, capa no agnóstica que maneja infraestructura específica como HTTP y JSON, y capa de composición que coordina múltiples capacidades.
+
+Functional Decomposition consiste en dividir el sistema en funciones pequeñas y bien definidas, cada una con una sola responsabilidad. Las ventajas incluyen que cada función puede probarse unitariamente, puedes reemplazar componentes sin tocar otros, y hay mayor claridad y mantenibilidad.
+
+Service Encapsulation propone que cada servicio debe ocultar su implementación interna detrás de una interfaz clara. Los demás componentes solo ven qué hace el servicio, no cómo lo hace. Esto permite cambiar de proveedor sin tocar el resto del código y facilita el testing mediante mocks.
+
+Canonical Expression estandariza los contratos de servicio usando DTOs o Data Transfer Objects. Estos objetos definen un formato común que todos los servicios entienden, independientemente de la tecnología subyacente. Los DTOs normalizan la estructura de datos entre todas las capas del sistema.
+
+RAG o Retrieval Augmented Generation combina búsqueda de información con generación de texto. El sistema primero indexa documentos relevantes, luego busca fragmentos que responden a la pregunta del usuario, y finalmente genera una respuesta basada en esos fragmentos específicos.
+
+HuggingFace es una plataforma que proporciona modelos de inteligencia artificial pre-entrenados listos para usar. Podemos usar modelos como DialoGPT para generar conversaciones naturales y all-MiniLM para crear embeddings de texto que capturan el significado semántico.
+
+Los embeddings son representaciones vectoriales de texto en un espacio multidimensional. Textos con significado similar tienen vectores cercanos en este espacio. Esto permite buscar información por significado semántico en lugar de coincidencia exacta de palabras clave.
+
+FAISS es una biblioteca desarrollada por Facebook para búsqueda eficiente de vectores similares. Crea índices optimizados que permiten encontrar los vectores más cercanos a un vector de consulta en milisegundos, incluso con millones de vectores.
+
+Django es un framework web de Python que sigue el patrón MTV (Model-Template-View). Proporciona un ORM para interactuar con bases de datos, un sistema de templates para generar HTML, y un sistema de URLs para enrutar peticiones HTTP.
+
+Los servicios agnósticos son aquellos que contienen lógica de negocio pura sin dependencias de frameworks específicos. Estos servicios pueden ser reutilizados en diferentes aplicaciones, probados independientemente, y migrados a otros sistemas sin modificaciones.
+
+Los servicios no agnósticos dependen de tecnologías específicas como Flask, Django, o protocolos HTTP. Su única responsabilidad es traducir entre el formato del transporte (JSON, XML, HTTP) y los DTOs canónicos que usan los servicios agnósticos.
+
+Un DTO o Data Transfer Object es un objeto plano que transporta datos entre capas sin incluir lógica de negocio. Los DTOs protegen las entidades internas de ser expuestas directamente, normalizan estructuras de datos, y facilitan la interoperabilidad entre servicios.
+
+El patrón Repository abstrae el acceso a datos creando una capa intermedia entre la lógica de negocio y la base de datos. Esto permite cambiar el motor de base de datos sin modificar los servicios, facilita el testing con repositorios mock, y centraliza las queries complejas.
+
+SOLID son cinco principios de diseño orientado a objetos: Single Responsibility (una clase tiene una única razón para cambiar), Open-Closed (abierto para extensión, cerrado para modificación), Liskov Substitution (los subtipos deben ser sustituibles por sus tipos base), Interface Segregation (muchas interfaces específicas son mejores que una general), y Dependency Inversion (depender de abstracciones, no de implementaciones concretas).
+
+La inyección de dependencias es un patrón donde los objetos reciben sus dependencias desde el exterior en lugar de crearlas internamente. Esto facilita el testing, reduce el acoplamiento entre componentes, y permite configurar diferentes implementaciones según el entorno.
+
+Un microservicio es un servicio pequeño e independiente que implementa una capacidad de negocio específica. Los microservicios se comunican mediante APIs REST o mensajería, pueden desplegarse independientemente, y permiten escalar cada servicio según sus necesidades particulares.
+
+REST (Representational State Transfer) es un estilo arquitectónico para diseñar APIs web. Usa los métodos HTTP estándar (GET, POST, PUT, DELETE), recursos identificados por URLs, y representaciones en formatos como JSON o XML.
+
+Los tokens JWT (JSON Web Tokens) son un estándar para transmitir información de forma segura entre partes. Consisten en tres partes: header (tipo y algoritmo), payload (claims o datos), y signature (firma digital). Se usan comúnmente para autenticación y autorización.
+
+El patrón Observer define una dependencia uno-a-muchos donde cuando un objeto cambia de estado, todos sus dependientes son notificados automáticamente. Es útil para implementar sistemas de eventos, notificaciones en tiempo real, y arquitecturas reactivas.
+
+El patrón Factory encapsula la creación de objetos proporcionando una interfaz para crear familias de objetos relacionados sin especificar sus clases concretas. Esto permite cambiar las implementaciones sin modificar el código cliente.
+
+WebSockets permiten comunicación bidireccional en tiempo real entre cliente y servidor sobre una única conexión TCP persistente. A diferencia de HTTP request-response, WebSockets mantienen la conexión abierta para intercambio continuo de mensajes.
+
+La caché es una capa de almacenamiento temporal que guarda datos frecuentemente accedidos para mejorar el rendimiento. Las estrategias incluyen cache-aside (la aplicación gestiona la caché), write-through (escribir en caché y base de datos simultáneamente), y write-behind (escribir primero en caché, luego en base de datos).
+
+El balanceo de carga distribuye el tráfico de red entre múltiples servidores para optimizar el uso de recursos, maximizar el throughput, minimizar el tiempo de respuesta, y evitar sobrecargas. Algoritmos comunes incluyen round-robin, least connections, y IP hash.
+
+Docker es una plataforma para desarrollar, enviar y ejecutar aplicaciones en contenedores. Los contenedores empaquetan el código y todas sus dependencias para que la aplicación se ejecute de manera confiable en cualquier entorno de computación.
+
+Kubernetes es un sistema de orquestación de contenedores que automatiza el despliegue, escalado y gestión de aplicaciones containerizadas. Agrupa contenedores en pods, gestiona su ciclo de vida, y proporciona descubrimiento de servicios y balanceo de carga.
+
+CI/CD (Continuous Integration/Continuous Deployment) son prácticas de DevOps donde el código se integra frecuentemente en un repositorio compartido, se prueba automáticamente, y se despliega a producción de forma automatizada.
+
+El versionado de APIs permite evolucionar servicios sin romper clientes existentes. Estrategias incluyen versionado en URL (/v1/users), en headers (Accept: application/vnd.api+json;version=1), o mediante negociación de contenido.
+
+La documentación de APIs mediante OpenAPI/Swagger describe endpoints, parámetros, tipos de respuesta y códigos de error. Permite generar clientes automáticamente, probar APIs interactivamente, y mantener la documentación sincronizada con el código.
+
+Los patrones de resiliencia como Circuit Breaker, Retry, y Timeout protegen sistemas distribuidos de fallos en cascada. Circuit Breaker abre el circuito tras múltiples fallos para evitar llamadas innecesarias, Retry reintenta operaciones fallidas con backoff exponencial, y Timeout limita el tiempo de espera.
+
+El event sourcing almacena el estado de la aplicación como una secuencia de eventos en lugar del estado actual. Esto proporciona un registro de auditoría completo, permite reconstruir el estado en cualquier momento, y facilita el análisis de datos históricos.
+
+CQRS (Command Query Responsibility Segregation) separa las operaciones de lectura y escritura en modelos diferentes. Los comandos modifican estado y no retornan datos, mientras las queries retornan datos sin modificar estado.
+
+GraphQL es un lenguaje de consulta para APIs que permite a los clientes solicitar exactamente los datos que necesitan. A diferencia de REST, una única petición GraphQL puede recuperar datos de múltiples recursos relacionados.
+
+La autenticación verifica la identidad del usuario (quién eres), mientras la autorización determina qué puede hacer (qué permisos tienes). OAuth 2.0 es un protocolo de autorización que permite a aplicaciones obtener acceso limitado a cuentas de usuario.
+
+El principio DRY (Don't Repeat Yourself) establece que cada pieza de conocimiento debe tener una representación única y autoritativa en el sistema. Esto reduce redundancia, facilita mantenimiento, y minimiza inconsistencias.
+
+El testing unitario prueba componentes individuales aislados de sus dependencias usando mocks y stubs. El testing de integración verifica que múltiples componentes funcionen correctamente juntos. El testing end-to-end valida flujos completos desde la perspectiva del usuario.
+
+La cobertura de código mide qué porcentaje del código es ejecutado por los tests. Aunque una alta cobertura no garantiza calidad, ayuda a identificar áreas sin probar y proporciona confianza al refactorizar.
