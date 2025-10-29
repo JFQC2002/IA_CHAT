@@ -3,257 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat IA - Service Layers Pattern</title>
+    <title>Asistente IA — Conversación</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root{
+            --bg:#0f1724;
+            --panel:#0b1220aa;
+            --accent:#7c5cff;
+            --muted:#94a3b8;
+            --glass: rgba(255,255,255,0.04);
+            --user: linear-gradient(135deg,#16a34a,#059669);
+            --assistant:#111827;
+            --card:#0b1220;
+            --radius:14px;
+            font-family: Inter, 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial;
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+
+        html,body{height:100%;}
+        body{
+            margin:0;
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(124,92,255,0.12), transparent),
+                        radial-gradient(800px 400px at 90% 80%, rgba(3,105,161,0.08), transparent),
+                        var(--bg);
+            color:#e6eef8;
+            -webkit-font-smoothing:antialiased;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:28px;
         }
-        
-        .chat-container {
-            width: 90%;
-            max-width: 800px;
-            height: 80vh;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+
+        .wrap{
+            width:100%;
+            max-width:1100px;
+            height:84vh;
+            display:grid;
+            grid-template-columns: 320px 1fr;
+            gap:20px;
         }
-        
-        .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
+
+        /* Sidebar */
+        .sidebar{
+            background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border-radius:var(--radius);
+            padding:18px;
+            box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+            display:flex;
+            flex-direction:column;
+            gap:14px;
+            min-height:0;
+            overflow:auto;
         }
-        
-        .chat-header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
+
+        .brand{display:flex;align-items:center;gap:12px}
+        .logo{
+            width:46px;height:46px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;box-shadow:0 6px 18px rgba(124,92,255,0.18);
         }
-        
-        .chat-header p {
-            font-size: 12px;
-            opacity: 0.9;
+        .title{font-size:16px;font-weight:700}
+        .subtitle{font-size:12px;color:var(--muted)}
+
+        .conversations{margin-top:6px;display:flex;flex-direction:column;gap:8px}
+        .conv{background:var(--glass);padding:10px;border-radius:10px;cursor:pointer;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+        .conv.active{background:linear-gradient(90deg, rgba(124,92,255,0.12), rgba(3,105,161,0.04));color:#fff}
+
+        .new-btn{margin-top:auto;padding:10px;border-radius:10px;background:transparent;border:1px dashed rgba(255,255,255,0.04);color:var(--muted);cursor:pointer}
+
+        /* Main chat panel */
+        .panel{
+            background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius:var(--radius);
+            padding:0;display:flex;flex-direction:column;overflow:hidden;box-shadow: 0 6px 30px rgba(2,6,23,0.6);
         }
-        
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: #f5f5f5;
+
+        .panel-header{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:14px}
+        .panel-header .name{font-weight:700}
+        .panel-header .meta{color:var(--muted);font-size:13px}
+
+        .messages{
+            padding:22px;flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;background:linear-gradient(180deg, rgba(255,255,255,0.005), transparent);
         }
-        
-        .message {
-            margin-bottom: 15px;
-            display: flex;
-            animation: slideIn 0.3s ease;
+
+        .msg{
+            display:flex;gap:12px;align-items:flex-end;max-width:85%;
+            animation:fadeUp .18s ease;
         }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .msg.assistant{align-self:flex-start}
+        .msg.user{align-self:flex-end;flex-direction:row-reverse}
+
+        .avatar{width:36px;height:36px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#111827, #0b1220);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+
+        .bubble{padding:12px 14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:#e6eef8;box-shadow: 0 6px 18px rgba(2,6,23,0.35);}
+        .msg.user .bubble{background:var(--user);color:white;box-shadow: 0 8px 22px rgba(2,6,23,0.45)}
+
+        .meta-time{font-size:11px;color:var(--muted);margin-top:6px}
+
+        @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+        .composer{padding:12px 18px;border-top:1px solid rgba(255,255,255,0.03);display:flex;gap:10px;align-items:center}
+        .input{
+            flex:1;background:transparent;border:1px solid rgba(255,255,255,0.04);padding:12px 14px;border-radius:12px;color:inherit;outline:none;font-size:14px
         }
-        
-        .message.user {
-            justify-content: flex-end;
-        }
-        
-        .message-content {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            word-wrap: break-word;
-        }
-        
-        .message.user .message-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .message.assistant .message-content {
-            background: white;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .chat-input-container {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #eee;
-        }
-        
-        .chat-input-form {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .chat-input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #eee;
-            border-radius: 25px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        
-        .chat-input:focus {
-            border-color: #667eea;
-        }
-        
-        .send-button {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: transform 0.2s;
-        }
-        
-        .send-button:hover {
-            transform: scale(1.05);
-        }
-        
-        .send-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 10px;
-            color: #999;
-        }
-        
-        .loading.show {
-            display: block;
+        .actions{display:flex;gap:8px}
+        .btn{padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#06b6d4);border:none;color:white;cursor:pointer;font-weight:600}
+        .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+        .loading{font-size:13px;color:var(--muted);padding:10px;text-align:center}
+
+        /* responsive */
+        @media (max-width:900px){
+            .wrap{grid-template-columns:1fr;max-width:760px}
+            .sidebar{display:none}
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h1>🤖 Chat IA con RAG</h1>
-            <p>Service Layers Pattern | Django + HuggingFace</p>
-        </div>
-        
-        <div class="chat-messages" id="chatMessages">
-            <div class="message assistant">
-                <div class="message-content">
-                    ¡Hola! Soy un asistente entrenado con información personalizada. ¿En qué puedo ayudarte?
+    <div class="wrap">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">IA</div>
+                <div>
+                    <div class="title">Asistente IA</div>
+                    <div class="subtitle">Conversaciones personalizadas</div>
                 </div>
             </div>
-        </div>
-        
-        <div class="loading" id="loading">
-            <p>Generando respuesta...</p>
-        </div>
-        
-        <div class="chat-input-container">
-            <form class="chat-input-form" id="chatForm">
-                <input 
-                    type="text" 
-                    class="chat-input" 
-                    id="messageInput" 
-                    placeholder="Escribe tu mensaje aquí..."
-                    autocomplete="off"
-                    required
-                >
-                <button type="submit" class="send-button" id="sendButton">
-                    Enviar
-                </button>
+
+            <div class="conversations" id="conversationsList">
+                <div class="conv active">Conversación reciente</div>
+                <div class="conv">Ejemplo: preguntas generales</div>
+            </div>
+
+            <button class="new-btn" id="newConversation">+ Nueva conversación</button>
+        </aside>
+
+        <main class="panel">
+            <div class="panel-header">
+                <div class="logo" style="width:38px;height:38px;border-radius:8px;">🤖</div>
+                <div>
+                    <div class="name">Asistente Inteligente</div>
+                    <div class="meta">Responde con contexto relevante</div>
+                </div>
+            </div>
+
+            <div class="messages" id="chatMessages">
+                <div class="msg assistant">
+                    <div class="avatar">A</div>
+                    <div>
+                        <div class="bubble">¡Hola! Soy un asistente entrenado con información personalizada. ¿En qué puedo ayudarte hoy?</div>
+                        <div class="meta-time">ahora</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading" style="display:none">Generando respuesta…</div>
+
+            <form class="composer" id="chatForm">
+                <input id="messageInput" class="input" type="text" placeholder="Escribe tu mensaje..." autocomplete="off" required />
+                <div class="actions">
+                    <button type="button" id="sendButton" class="btn">Enviar</button>
+                </div>
             </form>
-        </div>
+        </main>
     </div>
 
     <script>
+        // Mantener los mismos IDs: chatMessages, chatForm, messageInput, sendButton, loading
         let conversationId = null;
         const chatMessages = document.getElementById('chatMessages');
         const chatForm = document.getElementById('chatForm');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
         const loading = document.getElementById('loading');
+        const newConvBtn = document.getElementById('newConversation');
 
-        function addMessage(content, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            messageDiv.innerHTML = `
-                <div class="message-content">${content}</div>
-            `;
-            chatMessages.appendChild(messageDiv);
+        function _formatTime(date){
+            return date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        }
+
+        function addMessage(content, sender){
+            const container = document.createElement('div');
+            container.className = `msg ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = sender === 'user' ? 'T' : 'A';
+
+            const body = document.createElement('div');
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.innerHTML = content.replace(/\n/g, '<br/>');
+
+            const meta = document.createElement('div');
+            meta.className = 'meta-time';
+            meta.textContent = _formatTime(new Date());
+
+            body.appendChild(bubble);
+            body.appendChild(meta);
+
+            container.appendChild(avatar);
+            container.appendChild(body);
+
+            chatMessages.appendChild(container);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        async function sendMessage(message) {
-            try {
+        async function sendMessage(message){
+            try{
                 const response = await fetch('/api/chat/send/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        conversation_id: conversationId
-                    })
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({message: message, conversation_id: conversationId})
                 });
 
                 const data = await response.json();
-
-                if (data.success) {
+                if(data.success){
                     conversationId = data.data.conversation_id;
                     addMessage(data.data.assistant_response, 'assistant');
                 } else {
-                    alert('Error: ' + data.error);
+                    alert('Error: ' + (data.error || 'Respuesta fallida'));
                 }
-            } catch (error) {
-                console.error('Error:', error);
+            }catch(err){
+                console.error(err);
                 alert('Error al enviar el mensaje');
             }
         }
 
-        chatForm.addEventListener('submit', async (e) => {
+        // Mantener compatibilidad: el botón y el form llaman al mismo flujo
+        sendButton.addEventListener('click', async (e)=>{
             e.preventDefault();
-            
             const message = messageInput.value.trim();
-            if (!message) return;
+            if(!message) return;
 
             addMessage(message, 'user');
             messageInput.value = '';
 
             sendButton.disabled = true;
             messageInput.disabled = true;
-            loading.classList.add('show');
+            loading.style.display = 'block';
 
             await sendMessage(message);
 
             sendButton.disabled = false;
             messageInput.disabled = false;
-            loading.classList.remove('show');
+            loading.style.display = 'none';
             messageInput.focus();
         });
+
+        // Soporta Enter en el input
+        chatForm.addEventListener('submit', (e)=>{ e.preventDefault(); sendButton.click(); });
+
+        newConvBtn && newConvBtn.addEventListener('click', ()=>{
+            // reinicia conversación en cliente (el backend creará nueva cuando se envíe sin conversation_id)
+            conversationId = null;
+            // limpiar mensajes UI
+            chatMessages.innerHTML = '';
+            addMessage('¡Hola! Soy un asistente entrenado con información personalizada. ¿En qué puedo ayudarte hoy?', 'assistant');
+        });
+
+        // focus al cargar
+        messageInput.focus();
     </script>
 </body>
 </html>
